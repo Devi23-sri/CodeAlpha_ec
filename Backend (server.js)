@@ -1,0 +1,55 @@
+const express = require('express');
+const bodyParser = require('body-parser');
+const cors = require('cors');
+
+const app = express();
+app.use(cors());
+app.use(bodyParser.json());
+app.use(express.static('public'));
+
+// Fake Database (you should replace this)
+let products = [
+  { id: 1, name: "Laptop", price: 50000, desc: "Powerful laptop" },
+  { id: 2, name: "Phone", price: 20000, desc: "Smartphone" }
+];
+
+let users = [];
+let orders = [];
+
+// Get all products
+app.get('/api/products', (req, res) => {
+  res.json(products);
+});
+
+// Get single product
+app.get('/api/products/:id', (req, res) => {
+  const product = products.find(p => p.id == req.params.id);
+  res.json(product);
+});
+
+// Register
+app.post('/api/register', (req, res) => {
+  users.push(req.body);
+  res.json({ message: "User registered" });
+});
+
+// Login
+app.post('/api/login', (req, res) => {
+  const user = users.find(u =>
+    u.email === req.body.email &&
+    u.password === req.body.password
+  );
+
+  if (user) res.json({ message: "Login success" });
+  else res.status(401).json({ message: "Invalid credentials" });
+});
+
+// Place order
+app.post('/api/order', (req, res) => {
+  orders.push(req.body);
+  res.json({ message: "Order placed successfully" });
+});
+
+app.listen(3000, () => {
+  console.log("Server running at http://localhost:3000");
+});
